@@ -17,7 +17,7 @@ import os
 import sys
 from typing import Optional
 
-from PySide6.QtCore import Signal, Slot
+from PySide6.QtCore import Signal, Slot, Property
 from PySide6.QtGui import QIcon, QAction, QPalette
 from PySide6.QtWidgets import (
     QWidget,
@@ -26,6 +26,7 @@ from PySide6.QtWidgets import (
     QMenu,
     QColorDialog,
 )
+import pyqtgraph as pg
 
 import resources_rc
 import mainwindow_ui
@@ -63,19 +64,27 @@ class MainWindow(QWidget):
         self.init_members()
 
     def init_members(self):
-        self.label_value = 0
+        self._counter = 0
+        self.history = [0]
+
+    @property
+    def counter(self):
+        return self._counter
+
+    @counter.setter
+    def counter(self, value):
+        self._counter = value
+        self.history.append(self._counter)
+        self.update_ui()
 
     def increment(self):
-        self.label_value += 1
-        self.update_label()
+        self.counter += 1
 
     def decrement(self):
-        self.label_value -= 1
-        self.update_label()
+        self.counter -= 1
 
     def reset(self):
-        self.label_value = 0
-        self.update_label()
+        self.counter = 0
 
     def select_label_color(self):
         original_palette = self.ui.label.palette()
@@ -89,8 +98,9 @@ class MainWindow(QWidget):
         palette.setColor(QPalette.ColorRole.WindowText, color)
         self.ui.label.setPalette(palette)
 
-    def update_label(self):
-        self.ui.label.setText(str(self.label_value))
+    def update_ui(self):
+        self.ui.label.setText(str(self._counter))
+        self.ui.plotting.plot(self.history)
 
 
 if __name__ != "__main__":
