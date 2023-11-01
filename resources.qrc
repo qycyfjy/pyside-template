@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="icons">
+        <file alias="box.svg">icons/box.svg</file>
+        <file alias="plus.svg">icons/plus.svg</file>
+        <file alias="minus.svg">icons/minus.svg</file>
+        <file alias="refresh-cw.svg">icons/refresh-cw.svg</file>
+    </qresource>
+</RCC>
