@@ -4,6 +4,7 @@
 # nuitka-project: --windows-icon-from-ico=box.png
 # nuitka-project: --disable-console
 # nuitka-project: --lto=yes
+# nuitka-project: --output-dir=.\bin
 
 try:
     from ctypes import windll
@@ -15,9 +16,10 @@ except ImportError:
 
 import os
 import sys
+import random
 from typing import Optional
 
-from PySide6.QtCore import Signal, Slot, Property
+from PySide6.QtCore import Signal, Slot, Property, Qt, QTimer
 from PySide6.QtGui import QIcon, QAction, QPalette
 from PySide6.QtWidgets import (
     QWidget,
@@ -60,6 +62,12 @@ class MainWindow(QWidget):
         self.ui.pushButton.clicked.connect(self.increment)
         self.ui.pushButton_2.clicked.connect(self.decrement)
         self.ui.pushButton_3.clicked.connect(self.reset)
+        self.ui.checkBox.stateChanged.connect(self.random_inc_dec)
+
+        self.random_inc_dec_timer = QTimer()
+        self.random_inc_dec_timer.setSingleShot(False)
+        self.random_inc_dec_timer.setInterval(200)
+        self.random_inc_dec_timer.timeout.connect(self.random_inc_dec_action)
 
         self.init_members()
 
@@ -76,6 +84,22 @@ class MainWindow(QWidget):
         self._counter = value
         self.history.append(self._counter)
         self.update_ui()
+
+    @Slot(Qt.CheckState)
+    def random_inc_dec(self, state):
+        if state == Qt.CheckState.Checked.value:
+            self.random_inc_dec_timer.start()
+        else:
+            self.random_inc_dec_timer.stop()
+
+    def random_inc_dec_action(self):
+        v = random.random()
+        if v < 0.48:
+            self.increment()
+        elif v > 0.52:
+            self.decrement()
+        else:
+            self.reset()
 
     def increment(self):
         self.counter += 1
